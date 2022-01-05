@@ -2,7 +2,7 @@ CC=g++
 CFLAGS=-g -pedantic # -Wall -Werror -Wextra
 SOURCEDIR = src
 BUILDDIR = build
-OBJECTS =
+OBJECTS = utils lobject ldump linstr lproto
 
 LUAS = 
 LUAC = luac5.3
