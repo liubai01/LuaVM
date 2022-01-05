@@ -4,6 +4,7 @@
 #include <vector>
 #include "utils.hpp"
 #include "lobject.hpp"
+#include "ltable.hpp"
 
 using namespace std;
 

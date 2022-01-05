@@ -10,6 +10,52 @@ using namespace std;
 #define lua_Number   double
 #define Instruction  unsigned int
 
+class VM;
+
+typedef union LargeValuePtr {
+	void* ptr;
+} LargeValuePtr;
+
+/**
+ * @brief A type alias of c functions invoked in lua
+ * @details 
+ */
+typedef int (*lua_CFunction) (VM *L);
+
+/**
+ * @brief A union of all possible values in runtime lua.
+ * @details A union of all possible values in runtime lua.
+ */
+typedef union Value {
+	LargeValuePtr  lptr;
+	lua_Integer    intgr;
+	lua_Number     numbr;
+	lua_CFunction  cfunc;
+} Value;
+
+/**
+ * @brief Tagged value (a tag for run-time type id)
+ * @details 
+ * 
+ */
+class TValue {
+public:
+	char tag;
+	Value val;
+
+	TValue(char tag);
+	~TValue();
+
+	bool isFunc();
+	int callCFunc(VM *L);
+};
+
+// tags
+#define LUA_TFUNCTION		0
+#define LUA_TABLE           1
+
+// TValue Transformation
+#define tval2tab(X) ((Table*) X.val.lptr.ptr)
 
 // Proto data
 // Remark: why we split data and proto itself is to allow

@@ -4,6 +4,7 @@
 #include "src/utils.hpp"
 #include "src/ldump.hpp"
 #include "src/lobject.hpp"
+#include "src/lvm.hpp"
 
 using namespace std;
 
@@ -31,7 +32,15 @@ int main(int argc, char* argv[])
     }
 
     Dumped d(fileBase);
-	d.dump2proto();
+    d.dump2proto();
 
-	return 0;
+    VM vm;
+
+    // TValue dummyf;
+    // dummyf.tag = LUA_TFUNCTION;
+    // dummyf.val.cfunc = [](VM* v) -> int {return 233;};
+
+    // cout << dummyf.callCFunc(nullptr) << endl;
+
+    return 0;
 }
