@@ -14,6 +14,11 @@ public:
 
     VM();
     ~VM();
+
+    void setTableUp(int upidx, string key, TValue val);
+    void getTableUp(int upidx, string key, int toidx);
+
+    void call(int funcidx, int argnum);
 };
 
 #endif

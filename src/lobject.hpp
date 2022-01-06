@@ -43,8 +43,19 @@ public:
 	char tag;
 	Value val;
 
+	// Constructor for an empty table 
 	TValue(char tag);
+	// Constructor for c function
+	TValue(lua_CFunction cfunc);
+	// Constructor for lua integer
+	TValue(char tag, lua_Integer val);
+	// Constructor for lua number
+	TValue(char tag, lua_Number vak);
+
 	~TValue();
+
+	// Free space of underlying object (pointer, etc.)
+	void clear();
 
 	bool isFunc();
 	int callCFunc(VM *L);
@@ -53,9 +64,22 @@ public:
 // tags
 #define LUA_TFUNCTION		0
 #define LUA_TABLE           1
+#define LUA_INTEGER         2
+#define LUA_NUMBER          3
+#define LUA_NIL             4
 
-// TValue Transformation
-#define tval2tab(X) ((Table*) X.val.lptr.ptr)
+// Unpack TValue -> Table
+#define tval2tab(X) ((Table*) (X).val.lptr.ptr)
+// Unpack TValue -> Integer
+#define tval2int(X) ((X).val.intgr)
+// Construct TValue
+#define tvalnil      (TValue(LUA_NIL))
+#define tvalint(X)   (TValue(LUA_INTEGER, (lua_Integer) X))
+#define tvalcfunc(X) (TValue(X))
+
+// TValue dummyf;
+// dummyf.tag = LUA_TFUNCTION;
+// dummyf.val.cfunc = [](VM* v) -> int {return 233;};
 
 // Proto data
 // Remark: why we split data and proto itself is to allow
