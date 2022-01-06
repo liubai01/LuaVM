@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     vm.setTableUp(0, "a", tvalint(6));
     vm.getTableUp(0, "print", 0);
     vm.getTableUp(0, "a", 1);
-    vm.call(0, 2);
+    vm.callcfunc(0, 1);
 
     // TValue dummyf;
     // dummyf.tag = LUA_TFUNCTION;

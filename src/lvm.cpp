@@ -2,6 +2,7 @@
 #include "ltable.hpp"
 
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 
@@ -16,10 +17,25 @@ VM::VM()
     // initialize the registers
     regs.resize(256, tvalnil);
 
-    // standard library: print (TBD)
+    // initialize the stack
+    stk.resize(256, nullptr);
+    stktop = 0;
+    stkbase = -1;
+
+    // standard library: print
     envtab->insert("print", tvalcfunc(
         [](VM* vm) -> int {
-            cout << "printTBD" << endl; 
+            for (int idx = vm->stkbase + 1; idx < vm->stktop; ++idx)
+            {
+                TValue outtval = vm->regs[idx];
+                if (outtval.tag == LUA_INTEGER)
+                {
+                    cout << tval2int(outtval) << endl;    
+                } else {
+                    cout << "TValue Print TBD" << endl;
+                } 
+            }
+
             return 0;
         })
     );
@@ -56,15 +72,40 @@ void VM::getTableUp(int upidx, string key, int toidx)
     
 }
 
-void VM::call(int funcidx, int argnum)
+void VM::pushNow2CallInfo()
+{
+    CallInfo ci;
+    ci.stktop  = stktop;
+    ci.stkbase = stkbase;
+
+    cis.push(ci);
+}
+
+void VM::popCallInfo2Now()
+{
+    CallInfo ci = cis.top();
+    cis.pop();
+
+    stktop  = ci.stktop;
+    stkbase = ci.stkbase;
+}
+
+void VM::callcfunc(int funcidx, int argnum)
 {
     // currently, support print only
-    TValue outtval = regs[funcidx + 1];
-    if (outtval.tag == LUA_INTEGER)
+    pushNow2CallInfo();
+
+    // assign function handler to new stkbase
+    stkbase = stktop;
+    stk[stkbase] = &regs[funcidx];
+    for (int i = 0; i < argnum; ++i)
     {
-        cout << tval2int(outtval) << endl;    
-    } else {
-        cout << "TValue Print TBD" << endl;
+        stk[stkbase + i + 1] = &regs[funcidx + i + 1];
     }
+    stktop = stkbase + argnum + 1;
+
+    assert(regs[funcidx].isFunc());
+    regs[funcidx].callCFunc(this);
     
+    popCallInfo2Now();
 }
